@@ -1,0 +1,27 @@
+{
+  "name": "eggreat-service",
+  "version": "1.0.0",
+  "description": "Eggreat Backend Service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index",
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/putrairawan992/eggreat-service.git"
+  },
+  "author": "Eggreat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/putrairawan992/eggreat-service/issues"
+  },
+  "homepage": "https://github.com/putrairawan992/eggreat-service#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mysql2": "^3.4.1",
+    "sequelize": "^6.32.1"
+  }
+}

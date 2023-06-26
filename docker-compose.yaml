@@ -1,0 +1,56 @@
+version: '3'
+services:
+  eggreat:
+    container_name: eggreat_service
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    volumes:
+      - .:/eggreat
+    env_file:
+      - .env
+    networks:
+      - eggreat-networks
+  nginx:
+    image: nginx:alpine
+    container_name: web-proxy
+    restart: unless-stopped
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    depends_on:
+      - eggreat
+    networks:
+      - eggreat-networks
+    # depends_on:
+      # - redis
+      # - db
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - 6379:6379
+  #   networks:
+  #     - eggreat-networks
+  # db:
+  #   image: mysql:5.7
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3306:3306
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+  #   networks:
+  #     - eggreat-networks
+  #   volumes:
+  #     - db-data:/var/lib/mysql
+networks:
+  eggreat-networks:
+    driver: bridge
+volumes:
+  db-data:
