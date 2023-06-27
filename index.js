@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false }))
 app.get('/', (req, res) => {
     res.send('Eggreat backend service started!!')
 })
-console.log("TEST CI/CD!!!");
+
 app.listen(PORT, () => {
     console.log("Server started....");
 })
