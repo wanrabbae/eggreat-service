@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 
 const app = express()
-const PORT = 4000 || process.env.PORT
+const PORT = 5000 || process.env.PORT
 
 // require('./config/db-conf')
 
@@ -16,3 +16,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log("Server started....");
 })
+
+module.exports = app;

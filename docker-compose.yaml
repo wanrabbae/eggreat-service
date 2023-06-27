@@ -14,18 +14,6 @@ services:
       - .env
     networks:
       - eggreat-networks
-  nginx:
-    image: nginx:alpine
-    container_name: web-proxy
-    restart: unless-stopped
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d
-    ports:
-      - 80:80
-    depends_on:
-      - eggreat
-    networks:
-      - eggreat-networks
     # depends_on:
       # - redis
       # - db

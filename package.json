@@ -4,7 +4,7 @@
   "description": "Eggreat Backend Service",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha ./test/* --exit",
     "dev": "nodemon index",
     "start": "node index"
   },
@@ -23,5 +23,9 @@
     "express": "^4.18.2",
     "mysql2": "^3.4.1",
     "sequelize": "^6.32.1"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
