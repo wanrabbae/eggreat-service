@@ -1,46 +1,46 @@
-name: Node Github CI
+name: Node Github CI/CD
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install and test
-      run: |
-        npm install
-        npm test
-      env:
-        CI: true
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
 
   deploy:
     needs: [test]
     runs-on: ubuntu-latest
 
     steps:
-    - name: SSH and deploy node app
-      uses: appleboy/ssh-action@master
-      with:
-        host: 165.232.171.210
-        username: root
-        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3IHxXopJIvoOQ516iRs+F8cGr7kNMEaNfh8T3zhWGuaVIdSrcmtjjFtWuj5E1pUZfXsWqkZqtgkB9+wuQYtzT5HJ3NiuwUjXvtNn1NtMpJnKqb8SGYNvRdl74OhGwsC8KTnRj0zI8ORTYj/DSY7Ku0bID5qf752cbMvwgCZ6ML+qtb59ctX+WELMVILZydNx3NOrZ/vUeGdywqTEotFTyGiMwkVMaMFlcl0/7dzGtIird5LmP2egoP6HARNEPdQStNFcxN97QxBIi/RG5pTTAWhYSlpHpWa7r/F3a/lhzPpj60kZN4H4Y1s1xhX4hIlU/OW9R4J/TPCfiucl7A8mkVQjsNBWvB9ETB4KBfA5WlbDQvB7eppFBbPHiPOybJVd4P9RsZbXD1awHbph4cvlIIbd10nFYgE0umwJtloZFtsWzyeBqteUHCZNtUzjtLAE4B4bYQ5+cAuCIeNMrqf4vbCbWMGp8Euun+frqAS+64c1fRXjec0d2HxhyU8Bw/V8= akhmadalwan@Akhmads-MacBook-Pro.local"
-        port: 5000
-        script: |
-          cd ~/eggreat-service
-          git pull origin main
-          npm install --production
-          pm2 restart eggreat-service
+      - name: SSH and deploy node app
+        uses: appleboy/ssh-action@master
+        with:
+          host: 165.232.171.210
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /root/eggreat-service
+            git pull origin main
+            npm install --production
+            pm2 restart eggreat-service
