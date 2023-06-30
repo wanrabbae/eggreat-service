@@ -1,11 +1,16 @@
-require('dotenv').config()
-const express = require('express')
-const helmet = require('helmet')
+import 'dotenv/config'
+import express from 'express'
+import helmet from 'helmet'
 
 const app = express()
 const PORT = process.env.PORT
 
-require('./config/db-conf')
+import response from "./src/utils/response.js"
+
+// Require API
+import authRoutes from './src/routes/auth.routes.js'
+
+import './config/db-conf.js'
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -16,14 +21,11 @@ app.get('/', (req, res) => {
     res.send('Eggreat backend service started!!')
 })
 
-app.get('/test', (req, res) => {
-    res.json({
-        key: "values"
-    })
-})
+app.use(response)
+app.use('/api', authRoutes)
 
 app.listen(PORT, () => {
     console.log("Server started....");
 })
 
-module.exports = app;
+export default app;
