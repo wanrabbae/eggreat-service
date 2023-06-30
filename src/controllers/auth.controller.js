@@ -1,4 +1,5 @@
 import AccountService from '../services/AccountService.js'
+import { hashPassword } from '../utils/functions.js'
 import bcrypt from 'bcrypt'
 
 const service = new AccountService();
@@ -36,10 +37,12 @@ export const register = async (req, res) => {
         // validation
         // ...
 
+        const hashedPassword = await hashPassword(password)
+
         const account = await service.createAccount({
             fullname,
             phone,
-            password
+            password: hashedPassword
         })
 
         return res.jsonSuccess('Register successfuly')

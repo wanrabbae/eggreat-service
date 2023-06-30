@@ -1,10 +1,13 @@
-const { Router } = require('express')
+import { Router } from 'express'
 
-import verify from '../middleware/verifyToken.js'
-import { getProfile } from '../controllers/account.controller.js'
+import { verify } from '../middleware/verify.js'
+import { getProfile, updateProfile, updateProfileFoto } from '../controllers/account.controller.js'
+import { upload } from '../utils/handleUpload.js';
 
 const router = Router();
 
-router.post("/account/profile", verify, getProfile);
+router.get("/account/profile", verify, getProfile);
+router.put("/account/profile", verify, updateProfile);
+router.put("/account/profile/foto", verify, upload.single('foto'), updateProfileFoto);
 
-module.exports = router
+export default router

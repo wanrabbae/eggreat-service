@@ -1,6 +1,7 @@
-const multer = require('multer');
-const AWS = require('aws-sdk');
-const multerS3 = require('multer-s3');
+import multer from 'multer'
+import AWS from 'aws-sdk'
+import fromIni from '@aws-sdk/credential-provider-ini'
+import multerS3 from 'multer-s3'
 
 const spacesEndpoint = new AWS.Endpoint(process.env.DO_SPACE_ENDPOINT);
 const s3 = new AWS.S3({
@@ -33,7 +34,7 @@ const upload = multer({
 //     })
 // }).array('files', 7);
 
-module.exports = {
+export {
     upload,
     // uploadMultiple
 }

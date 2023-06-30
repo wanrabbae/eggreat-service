@@ -1,10 +1,18 @@
 import Account from "../models/Account.js"
+import Toko from "../models/Toko.js"
 import jwt from "jsonwebtoken"
 import { Op } from 'sequelize'
 
 class AccountService {
     async getAccount(id) {
-        return await Account.scope('withoutPassword').findByPk(id)
+        return await Account.findByPk(id, {
+            attributes: {
+                exclude: ['password']
+            },
+            include: Toko,
+            raw: true,
+            nest: true
+        })
     }
 
     async getAccountPhone(phone) {
@@ -36,6 +44,10 @@ class AccountService {
 
     async createAccount(payload) {
         return await Account.create(payload)
+    }
+
+    async updateAccount(payload, id) {
+        return await Account.update(payload, { where: { id: id } })
     }
 }
 
