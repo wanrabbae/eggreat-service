@@ -6,6 +6,10 @@ class AlamatService {
         return await Alamat.findAll({ where: { account_id: account_id } })
     }
 
+    async getAlamatByToko(toko_id) {
+        return await Alamat.findOne({ where: { toko_id: toko_id } })
+    }
+
     async createAlamat(payload) {
         return await Alamat.create(payload)
     }
@@ -16,6 +20,10 @@ class AlamatService {
 
     async destroyAlamat(id) {
         return await Alamat.destroy({ where: { id: id } })
+    }
+
+    async updateAlamatByToko(payload, toko_id) {
+        return await Alamat.update(payload, { where: { toko_id: toko_id } })
     }
 }
 

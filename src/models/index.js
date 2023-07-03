@@ -3,8 +3,12 @@
 
 // // DEFINE REF
 
-// Account.hasOne(Toko, {
+// Account.belongsTo(Toko, {
 //     foreignKey: "account_id",
+// })
+
+// Toko.belongsTo(Account, {
+//     foreignKey: "account_id"
 // })
 
 // export { Toko, Account }

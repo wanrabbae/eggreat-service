@@ -1,5 +1,6 @@
 import AccountService from '../services/AccountService.js'
 import { hashPassword } from '../utils/functions.js'
+import { handleUpload } from '../utils/handleUpload.js'
 
 const service = new AccountService();
 
@@ -26,8 +27,19 @@ const updateProfile = async (req, res) => {
 }
 
 const updateProfileFoto = async (req, res) => {
-    console.log(req.file);
-    res.send('success update profile')
+    try {
+        if (!req.file) {
+            return res.errorBadRequest('foto is required!')
+        }
+
+        const upload = await handleUpload(req.file)
+
+        await service.updateAccount({ foto: upload.Location }, req.account.id)
+
+        return res.jsonSuccess('success update profile')
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
 }
 
 export { getProfile, updateProfileFoto, updateProfile }

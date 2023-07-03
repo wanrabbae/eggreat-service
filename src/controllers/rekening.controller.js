@@ -1,5 +1,4 @@
 import TokoService from '../services/TokoService.js'
-import { hashPassword } from '../utils/functions.js'
 
 const service = new TokoService();
 

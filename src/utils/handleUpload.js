@@ -1,40 +1,47 @@
 import multer from 'multer'
 import AWS from 'aws-sdk'
-import fromIni from '@aws-sdk/credential-provider-ini'
-import multerS3 from 'multer-s3'
+import { randomString } from './functions.js';
 
-const spacesEndpoint = new AWS.Endpoint(process.env.DO_SPACE_ENDPOINT);
-const s3 = new AWS.S3({
-    endpoint: spacesEndpoint,
-    accessKeyId: process.env.DO_SPACE_KEY,
-    secretAccessKey: process.env.DO_SPACE_SECRET
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+    region: "ap-southeast-3"
 });
+
+const s3 = new AWS.S3();
 
 const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.DO_SPACE_NAME,
-        acl: 'public-read',
-        contentType: multerS3.AUTO_CONTENT_TYPE,
-        key: function (req, file, cb) {
-            cb(null, Date.now().toString() + '-' + file.originalname);
-        }
-    })
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024, // limit file size to 5MB
+    },
 });
 
-// const uploadMultiple = multer({
-//     storage: multerS3({
-//         s3: s3,
-//         bucket: process.env.DO_SPACE_NAME,
-//         acl: 'public-read',
-//         contentType: multerS3.AUTO_CONTENT_TYPE,
-//         key: function (req, file, cb) {
-//             cb(null, Date.now().toString() + '-' + file.originalname);
-//         }
-//     })
-// }).array('files', 7);
+function handleUpload(file) {
+    return new Promise((resolve, reject) => {
+        let filesplit = file.originalname.split('.')
+        let fileExt = filesplit[filesplit.length - 1]
+        let fileName = "EGGREAT-" + randomString(7) + "." + fileExt
+
+        const params = {
+            Bucket: 'eggreat-service',
+            Key: fileName,
+            Body: file.buffer,
+            ACL: 'public-read',
+        };
+
+        s3.upload(params, (err, data) => {
+            if (err) {
+                console.error(err);
+                reject('Error uploading file');
+            } else {
+                resolve(data);
+            }
+        });
+    });
+}
 
 export {
     upload,
-    // uploadMultiple
+    handleUpload,
 }

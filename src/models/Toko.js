@@ -5,6 +5,7 @@ import Address from "./Alamat.js";
 
 const Toko = db.define('toko', {
     account_id: Sequelize.INTEGER,
+    toko_id: Sequelize.INTEGER,
     address_id: Sequelize.INTEGER,
     is_delivery_product: Sequelize.BOOLEAN,
     is_picked_product: Sequelize.BOOLEAN,
