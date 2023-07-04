@@ -1,14 +1,10 @@
-// import Account from "./Account.js";
-// import Toko from "./Toko.js";
+import Account from "./Account.js";
+import Toko from "./Toko.js";
 
-// // DEFINE REF
+// DEFINE REF YANG ERROR DISIINI AGAR TIDAK ERROR
 
-// Account.belongsTo(Toko, {
-//     foreignKey: "account_id",
-// })
+Toko.belongsTo(Account, {
+    foreignKey: "account_id"
+})
 
-// Toko.belongsTo(Account, {
-//     foreignKey: "account_id"
-// })
-
-// export { Toko, Account }
+export { Toko, Account }

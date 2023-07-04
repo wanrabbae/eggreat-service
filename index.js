@@ -13,6 +13,7 @@ import authRoutes from './src/routes/auth.routes.js'
 import accountRoutes from './src/routes/accounts.routes.js'
 import rekeningRoutes from './src/routes/rekening.routes.js'
 import addressRoutes from './src/routes/address.routes.js'
+import productRoutes from './src/routes/product.routes.js'
 
 import './config/db-conf.js'
 
@@ -27,7 +28,7 @@ app.get('/', (req, res) => {
 })
 
 app.use(response)
-app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes)
+app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes)
 
 app.use('*', (req, res) => {
     res.errorNotFound('Not Found')

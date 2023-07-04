@@ -2,6 +2,7 @@ import Sequelize from "sequelize"
 import db from "../../config/db-conf.js"
 import Rekening from "./Rekening.js";
 import Address from "./Alamat.js";
+import Account from "./Account.js";
 
 const Toko = db.define('toko', {
     account_id: Sequelize.INTEGER,
@@ -21,7 +22,7 @@ Toko.hasMany(Rekening, {
 })
 
 Toko.belongsTo(Address, {
-    foreignKey: 'toko_id'
+    foreignKey: 'address_id'
 })
 
 export default Toko;

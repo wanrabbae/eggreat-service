@@ -1,8 +1,10 @@
 import AccountService from '../services/AccountService.js'
+import TokoService from '../services/TokoService.js'
 import { hashPassword } from '../utils/functions.js'
 import bcrypt from 'bcrypt'
 
 const service = new AccountService();
+const tokoService = new TokoService();
 
 export const login = async (req, res) => {
     const { emailOrPhone, password } = req.body;
@@ -44,6 +46,13 @@ export const register = async (req, res) => {
             phone,
             password: hashedPassword
         })
+
+        if (account) {
+            await tokoService.createToko({
+                account_id: account.id,
+                address_id: 0
+            })
+        }
 
         return res.jsonSuccess('Register successfuly')
     } catch (error) {
