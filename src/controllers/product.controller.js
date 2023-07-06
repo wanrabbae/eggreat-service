@@ -1,14 +1,15 @@
 import ProductService from '../services/ProductService.js'
+import { handleUpload } from '../utils/handleUpload.js';
 
 const service = new ProductService();
 
 const getProducts = async (req, res) => {
-    const ProductToko = await service.getProduct(req.query.category)
+    const ProductToko = await service.getProduct(req.query.category, req.query.search_key)
     return res.jsonData(ProductToko)
 }
 
 const getProductByToko = async (req, res) => {
-    const ProductToko = await service.getProductByToko(req.account.toko_id)
+    const ProductToko = await service.getProductByToko(req.account.toko_id, req.query.status)
     return res.jsonData(ProductToko)
 }
 
@@ -18,19 +19,30 @@ const getDetailProduct = async (req, res) => {
 }
 
 const postProduct = async (req, res) => {
-    const { nama_Product, detail_Product, provinsi, kota, kecamatan, kelurahan, kodepos } = req.body
-
     try {
-        await service.createProduct({
-            account_id: req.account.id,
-            nama_alamat: nama_alamat,
-            detail_alamat: detail_alamat,
-            provinsi: provinsi,
-            kota: kota,
-            kecamatan: kecamatan,
-            kelurahan: kelurahan,
-            kodepos: kodepos,
+        if (!req.files[0]) {
+            return res.errorBadRequest('Minimal upload 1 foto produk')
+        }
+
+        const product = await service.createProduct({
+            toko_id: req.account.toko_id,
+            category_id: req.body.category_id,
+            product_name: req.body.product_name,
+            description: req.body.description,
+            price: req.body.price,
+            quantity: req.body.quantity,
+            quantity_unit: req.body.quantity_unit,
+            stock: req.body.stock,
+            is_delivery: req.body.is_delivery,
+            shipping_costs: req.body.shipping_costs,
         })
+        console.log("PRODUCT_ID: ", product.id);
+
+        for (let index = 0; index < req.files.length; index++) {
+            let file = req.files[index];
+            let uploaded = await handleUpload(file)
+            await service.createProductImage({ product_id: product.id, image: uploaded.Location })
+        }
 
         return res.jsonSuccess()
     } catch (error) {
@@ -63,4 +75,9 @@ const deleteProduct = async (req, res) => {
     return res.jsonSuccess()
 }
 
-export { getProducts, getProductByToko, getDetailProduct, postProduct, putProduct, deleteProduct }
+const getCategories = async (req, res) => {
+    const data = await service.getProductCategory()
+    return res.jsonData(data)
+}
+
+export { getProducts, getProductByToko, getDetailProduct, postProduct, putProduct, deleteProduct, getCategories }

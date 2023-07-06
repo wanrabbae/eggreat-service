@@ -10,6 +10,7 @@ const Account = db.define('accounts', {
     password: Sequelize.STRING,
     foto: Sequelize.STRING,
     fcm: Sequelize.STRING,
+    is_blocked: Sequelize.BOOLEAN,
     verified_at: Sequelize.DATE,
     created_at: Sequelize.DATE,
 }, {

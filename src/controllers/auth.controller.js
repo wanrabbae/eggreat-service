@@ -16,6 +16,10 @@ export const login = async (req, res) => {
             throw new Error('Oops! No. Telepon atau Email yang Anda masukkan tidak terdaftar!')
         }
 
+        if (account.is_blocked == true) {
+            throw new Error('Maaf akun anda sudah terblokir')
+        }
+
         const isPasswordValid = await bcrypt.compare(password, account.password);
 
         if (!isPasswordValid) {

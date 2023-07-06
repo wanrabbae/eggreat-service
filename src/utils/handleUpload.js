@@ -1,6 +1,6 @@
 import multer from 'multer'
 import AWS from 'aws-sdk'
-import { randomString } from './functions.js';
+import { getFileNameFromUrlS3, randomString } from './functions.js';
 
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -41,7 +41,23 @@ function handleUpload(file) {
     });
 }
 
+async function deleteFile(bucketName, urlFile) {
+    try {
+        let fileName = getFileNameFromUrlS3(urlFile)
+        const params = {
+            Bucket: 'eggreat-service',
+            Key: fileName
+        };
+
+        await s3.deleteObject(params).promise();
+        console.log(`File "${fileName}" deleted successfully from "${bucketName}".`);
+    } catch (error) {
+        console.error(`Error deleting file "${fileName}" from "${bucketName}":`, error);
+    }
+}
+
 export {
     upload,
     handleUpload,
+    deleteFile
 }

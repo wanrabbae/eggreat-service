@@ -1,5 +1,6 @@
 import moment from 'moment-timezone'
 import bcrypt from 'bcrypt'
+import path from 'path'
 
 function getMoment() {
     return moment().locale('id').tz('Asia/Jakarta')
@@ -30,6 +31,11 @@ function randomString(length = 16) {
     return result
 }
 
+function getFileNameFromUrlS3(url) {
+    const fileName = path.basename(url);
+    return fileName;
+}
+
 export {
-    getMoment, randomNumber, hashPassword, randomString
+    getMoment, randomNumber, hashPassword, randomString, getFileNameFromUrlS3
 }

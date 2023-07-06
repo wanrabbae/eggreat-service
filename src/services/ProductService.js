@@ -7,15 +7,23 @@ import { Toko, Account } from "../models/index.js"
 import Address from "../models/Alamat.js"
 
 class ProductService {
-    async getProduct(category_name) {
+    async getProduct(category_name, search_key) {
+        let whereProduct = {
+            product_status: "lolos"
+        }
         let whereCond = {
-            category_name: category_name
+            category_name: category_name,
         }
 
         if (category_name == 'all' || !category_name) whereCond = {}
 
+        if (search_key && search_key != '') whereProduct.product_name = {
+            [Op.like]: `%${search_key}%`
+        }
+
         return await Product.findAll({
             attributes: ["id", "product_name", "price", "product_status", "created_at"],
+            where: whereProduct,
             include: [
                 {
                     model: ProductImage,
@@ -30,10 +38,15 @@ class ProductService {
         })
     }
 
-    async getProductByToko(toko_id) {
+    async getProductByToko(toko_id, status) {
+        let whereCond = { toko_id: toko_id }
+
+        if (status == 'stok_habis') whereCond.stock = 0
+        if (status == 'oncheck') whereCond.product_status = "proses"
+
         return await Product.findAll({
-            attributes: ["id", "product_name", "price", "created_at"],
-            where: { toko_id: toko_id },
+            attributes: ["id", "product_name", "product_status", "price", "created_at"],
+            where: whereCond,
             include: [
                 {
                     model: ProductImage
@@ -85,6 +98,14 @@ class ProductService {
 
     async destroyProduct(id) {
         return await Product.destroy({ where: { id: id } })
+    }
+
+    async getProductCategory() {
+        return await ProductCategory.findAll({ raw: true, nest: true, attributes: ["id", "category_name"] })
+    }
+
+    async createProductImage(payload) {
+        return await ProductImage.create(payload)
     }
 }
 
