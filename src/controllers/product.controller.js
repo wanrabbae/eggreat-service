@@ -1,5 +1,5 @@
 import ProductService from '../services/ProductService.js'
-import { handleUpload } from '../utils/handleUpload.js';
+import { deleteFile, handleUpload } from '../utils/handleUpload.js';
 
 const service = new ProductService();
 
@@ -36,7 +36,6 @@ const postProduct = async (req, res) => {
             is_delivery: req.body.is_delivery,
             shipping_costs: req.body.shipping_costs,
         })
-        console.log("PRODUCT_ID: ", product.id);
 
         for (let index = 0; index < req.files.length; index++) {
             let file = req.files[index];
@@ -71,8 +70,25 @@ const putProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
-    await service.destroyProduct(req.params.id)
-    return res.jsonSuccess()
+    const product = await service.getSingleProduct(req.params.id)
+
+    if (product == null) return res.errorNotFound("Produk tidak ditemukan")
+
+    const productImage = await service.getProductImage(req.params.id)
+
+    if (productImage != null) {
+        // delete files from S3
+        for (let index = 0; index < productImage.length; index++) {
+            const file = productImage[index];
+            await deleteFile(file.image)
+        }
+
+        await service.destroyProductImage(req.params.id)
+        await service.destroyProduct(req.params.id)
+        return res.jsonSuccess()
+    }
+
+    return res.errorBadRequest()
 }
 
 const getCategories = async (req, res) => {

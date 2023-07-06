@@ -88,6 +88,10 @@ class ProductService {
         })
     }
 
+    async getSingleProduct(id) {
+        return await Product.findByPk(id, { attributes: ["id", "toko_id"], raw: true, nest: true })
+    }
+
     async createProduct(payload) {
         return await Product.create(payload)
     }
@@ -104,8 +108,16 @@ class ProductService {
         return await ProductCategory.findAll({ raw: true, nest: true, attributes: ["id", "category_name"] })
     }
 
+    async getProductImage(product_id) {
+        return await ProductImage.findAll({ raw: true, nest: true, where: { product_id } })
+    }
+
     async createProductImage(payload) {
         return await ProductImage.create(payload)
+    }
+
+    async destroyProductImage(product_id) {
+        return await ProductImage.destroy({ where: { product_id: product_id } })
     }
 }
 

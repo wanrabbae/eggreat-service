@@ -42,6 +42,14 @@ class AccountService {
         );
     }
 
+    async getSingleAccount(id) {
+        return await Account.findByPk(id, {
+            attributes: ["id", "foto", "is_blocked"],
+            raw: true,
+            nest: true
+        })
+    }
+
     async createAccount(payload) {
         return await Account.create(payload)
     }

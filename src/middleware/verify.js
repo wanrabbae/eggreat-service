@@ -13,6 +13,11 @@ const verify = async (req, res, next) => {
         const verified = jwt.verify(token[1], process.env.JWT_SECRET)
         req.account = verified
 
+        const checkIsBlocked = await service.getSingleAccount(req.account.id)
+        console.log(checkIsBlocked);
+
+        if (checkIsBlocked.is_blocked == true) return res.errorUnauthorized("Unauthorized, akun anda dinonaktifkan")
+
         return next()
     } catch (err) {
         return res.errorUnauthorized("Unauthorized")

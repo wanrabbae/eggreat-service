@@ -41,7 +41,7 @@ function handleUpload(file) {
     });
 }
 
-async function deleteFile(bucketName, urlFile) {
+async function deleteFile(urlFile) {
     try {
         let fileName = getFileNameFromUrlS3(urlFile)
         const params = {
@@ -50,9 +50,9 @@ async function deleteFile(bucketName, urlFile) {
         };
 
         await s3.deleteObject(params).promise();
-        console.log(`File "${fileName}" deleted successfully from "${bucketName}".`);
+        console.log(`File "${fileName}" deleted successfully from "${params.Bucket}".`);
     } catch (error) {
-        console.error(`Error deleting file "${fileName}" from "${bucketName}":`, error);
+        console.error(`Error deleting file "${fileName}" from "${params.Bucket}":`, error);
     }
 }
 
