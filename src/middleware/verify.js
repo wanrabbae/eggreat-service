@@ -14,7 +14,6 @@ const verify = async (req, res, next) => {
         req.account = verified
 
         const checkIsBlocked = await service.getSingleAccount(req.account.id)
-        console.log(checkIsBlocked);
 
         if (checkIsBlocked.is_blocked == true) return res.errorUnauthorized("Unauthorized, akun anda dinonaktifkan")
 

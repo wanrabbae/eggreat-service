@@ -15,7 +15,7 @@ router.get("/products/:id", getDetailProduct);
 // TOKO PRODUCTS
 router.get("/toko/product", verify, verifyToko, getProductByToko);
 router.post("/toko/product", verify, verifyToko, upload.array('image'), postProduct);
-router.put("/toko/product/:id", verify, verifyToko, putProduct);
+// router.put("/toko/product/:id", verify, verifyToko, putProduct);
 router.delete("/toko/product/:id", verify, verifyToko, deleteProduct);
 
 
