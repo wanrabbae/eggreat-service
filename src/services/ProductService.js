@@ -71,16 +71,22 @@ class ProductService {
                 },
                 {
                     model: ProductRating,
-                    include: Account
+                    attributes: ["id", "message", "rate"],
+                    include: {
+                        model: Account,
+                        attributes: ["id", "fullname", "foto"]
+                    }
                 },
                 {
                     model: Toko,
+                    attributes: ["id", "account_id", "is_delivery_product", "is_picked_product"],
                     include: [
                         {
                             model: Address
                         },
                         {
-                            model: Account
+                            model: Account,
+                            attributes: ["id", "fullname"]
                         },
                     ]
                 }

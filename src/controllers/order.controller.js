@@ -119,4 +119,29 @@ const prosesOrder = async (req, res) => {
     }
 }
 
-export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder, cancelOrder, confirmOrder, prosesOrder }
+const reviewOrder = async (req, res) => {
+    try {
+        const findOrder = await service.getSingleOrder(req.params.id)
+
+        await service.updateOrder({
+            status: "selesai",
+        }, req.params.id)
+
+        for (let index = 0; index < findOrder.order_details.length; index++) {
+            const element = findOrder.order_details[index];
+            await service.giveRating({
+                product_id: element.product_id,
+                account_id: req.account.id,
+                order_id: req.params.id,
+                message: req.body.message,
+                rate: req.body.rate,
+            })
+        }
+
+        return res.jsonSuccess()
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder, cancelOrder, confirmOrder, prosesOrder, reviewOrder }

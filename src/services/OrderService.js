@@ -4,6 +4,8 @@ import Toko from "../models/Toko.js"
 import Address from "../models/Alamat.js"
 import Product from "../models/Product.js"
 import ProductImage from "../models/ProductImage.js"
+import Account from "../models/Account.js"
+import ProductRating from "../models/ProductRating.js"
 
 class OrderService {
     async getOrderAccount(account_id, status) {
@@ -32,7 +34,15 @@ class OrderService {
                     model: Address
                 },
                 {
-                    model: Toko
+                    model: Toko,
+                    include: {
+                        model: Account,
+                        attributes: ["id", "fullname"]
+                    }
+                },
+                {
+                    model: Account,
+                    attributes: ["id", "fullname"]
                 },
                 {
                     model: OrderDetail,
@@ -86,6 +96,10 @@ class OrderService {
 
     async createOrderDetail(payload) {
         return await OrderDetail.create(payload)
+    }
+
+    async giveRating(payload) {
+        return await ProductRating.create(payload)
     }
 }
 
