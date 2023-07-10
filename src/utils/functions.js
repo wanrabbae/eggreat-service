@@ -19,6 +19,12 @@ function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+function generateRandomNumber(digits) {
+    const min = Math.pow(10, digits - 1);
+    const max = Math.pow(10, digits) - 1;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function randomString(length = 16) {
     var result = ''
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -36,6 +42,10 @@ function getFileNameFromUrlS3(url) {
     return fileName;
 }
 
+function generateInv() {
+    return "#INV-EGRT" + generateRandomNumber(4)
+}
+
 export {
-    getMoment, randomNumber, hashPassword, randomString, getFileNameFromUrlS3
+    getMoment, randomNumber, hashPassword, randomString, getFileNameFromUrlS3, generateInv
 }

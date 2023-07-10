@@ -15,6 +15,7 @@ import rekeningRoutes from './src/routes/rekening.routes.js'
 import addressRoutes from './src/routes/address.routes.js'
 import productRoutes from './src/routes/product.routes.js'
 import cartRoutes from './src/routes/cart.routes.js'
+import orderRoutes from './src/routes/order.routes.js'
 
 import adminRoutes from './src/routes/admin/admin.routes.js'
 import adminAuthRoutes from './src/routes/admin/auth.routes.js'
@@ -32,7 +33,7 @@ app.get('/', (req, res) => {
 })
 
 app.use(response)
-app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes)
+app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes, orderRoutes)
 app.use('/api/admin', adminRoutes, adminAuthRoutes)
 
 app.use('*', (req, res) => {

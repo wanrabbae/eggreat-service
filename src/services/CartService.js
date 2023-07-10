@@ -1,7 +1,5 @@
 import Cart from "../models/Cart.js"
 import Product from "../models/Product.js"
-import jwt from "jsonwebtoken"
-import { Op } from 'sequelize'
 import ProductImage from "../models/ProductImage.js"
 
 class CartService {
@@ -10,7 +8,7 @@ class CartService {
             where: { account_id: account_id },
             include: {
                 model: Product,
-                attributes: ["id", "product_name", "stock", "price", "product_status", "is_delivery"],
+                attributes: ["id", "product_name", "stock", "price", "product_status", "is_delivery", "toko_id"],
                 include: ProductImage
             }
         })

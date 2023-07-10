@@ -1,8 +1,10 @@
 import AccountService from '../services/AccountService.js'
+import TokoService from '../services/TokoService.js'
 import { hashPassword } from '../utils/functions.js'
 import { deleteFile, handleUpload } from '../utils/handleUpload.js'
 
 const service = new AccountService();
+const tokoService = new TokoService();
 
 const getProfile = async (req, res) => {
     const profile = await service.getAccount(req.account.id)
@@ -46,4 +48,16 @@ const updateProfileFoto = async (req, res) => {
     }
 }
 
-export { getProfile, updateProfileFoto, updateProfile }
+const updateOrderSettingToko = async (req, res) => {
+    try {
+        await tokoService.updateToko({
+            is_delivery_product: req.body.is_delivery_product, is_picked_product: req.body.is_picked_product
+        }, req.account.toko_id)
+
+        return res.jsonSuccess('success update toko order setting')
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+export { getProfile, updateProfileFoto, updateProfile, updateOrderSettingToko }
