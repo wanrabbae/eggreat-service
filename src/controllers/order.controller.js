@@ -1,7 +1,9 @@
 import OrderService from '../services/OrderService.js'
+import ProductService from '../services/ProductService.js'
 import { generateInv } from '../utils/functions.js';
 
 const service = new OrderService();
+const productService = new ProductService();
 
 const getAccountOrder = async (req, res) => {
     const Order = await service.getOrderAccount(req.account.id, req.query.status)
@@ -36,12 +38,21 @@ const postOrder = async (req, res) => {
         if (createOrder) {
             for (let index = 0; index < order_detail.length; index++) {
                 const orderDetail = order_detail[index];
+                const checkProduct = await productService.getSingleProduct(orderDetail.product_id)
+
+                // if(checkProduct.stock < orderDetail.quantity) {
+                //     return res.errorBadRequest('Oops! Salah satu stok produk tidak mencukupi')
+                // }
+
                 await service.createOrderDetail({
                     order_id: createOrder.id,
                     product_id: orderDetail.product_id,
                     quantity: orderDetail.quantity,
                     is_picked: orderDetail.is_picked
                 })
+
+                const newStock = checkProduct.stock - orderDetail.quantity
+                await productService.updateProduct({ stock: newStock }, orderDetail.product_id)
             }
         }
 
@@ -64,4 +75,48 @@ const updateStatusOrder = async (req, res) => {
     }
 }
 
-export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder }
+const cancelOrder = async (req, res) => {
+    try {
+        const findOrder = await service.getSingleOrder(req.params.id)
+        await service.updateOrder({
+            status: "dibatalkan",
+        }, req.params.id)
+
+        for (let index = 0; index < findOrder.order_details.length; index++) {
+            const element = findOrder.order_details[index];
+            const checkProduct = await productService.getSingleProduct(element.product_id)
+            const newStock = checkProduct.stock + element.quantity
+            await productService.updateProduct({ stock: newStock }, element.product_id)
+        }
+
+        return res.jsonSuccess()
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+const confirmOrder = async (req, res) => {
+    try {
+        await service.updateOrder({
+            status: "diterima",
+        }, req.params.id)
+
+        return res.jsonSuccess()
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+const prosesOrder = async (req, res) => {
+    try {
+        await service.updateOrder({
+            status: "proses",
+        }, req.params.id)
+
+        return res.jsonSuccess()
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder, cancelOrder, confirmOrder, prosesOrder }

@@ -66,6 +66,16 @@ class OrderService {
         })
     }
 
+    async getSingleOrder(id) {
+        return await Order.findByPk(id, {
+            attributes: ["id"],
+            include: [{
+                model: OrderDetail,
+                attributes: ["id", "product_id", "quantity"]
+            }],
+        })
+    }
+
     async createOrder(payload) {
         return await Order.create(payload)
     }

@@ -89,7 +89,7 @@ class ProductService {
     }
 
     async getSingleProduct(id) {
-        return await Product.findByPk(id, { attributes: ["id", "toko_id"], raw: true, nest: true })
+        return await Product.findByPk(id, { attributes: ["id", "toko_id", "stock"], raw: true, nest: true })
     }
 
     async createProduct(payload) {
