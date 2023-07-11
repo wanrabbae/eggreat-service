@@ -23,12 +23,16 @@ const getTokoOrder = async (req, res) => {
 const postOrder = async (req, res) => {
     const { address_account_id, toko_id, total_harga_produk, delivery_costs, discount_amount, payment_type, order_detail } = req.body
 
+    let total_harga = (parseInt(total_harga_produk) + parseInt(delivery_costs))
+    if (parseInt(discount_amount) > 0) total_harga = total_harga - (total_harga * (parseInt(discount_amount) / 100))
+
     try {
         const createOrder = await service.createOrder({
             account_id: req.account.id,
             address_id: address_account_id,
             toko_id: toko_id,
-            total_harga: total_harga_produk,
+            total_harga: total_harga,
+            total_harga_produk: total_harga_produk,
             delivery_costs: delivery_costs,
             payment_type: payment_type,
             discount_amount: discount_amount,

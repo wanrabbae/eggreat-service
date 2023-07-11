@@ -13,6 +13,7 @@ const Order = db.define('orders', {
     total_harga: Sequelize.INTEGER,
     status: Sequelize.ENUM('belum dibayar', 'sudah dibayar', 'proses', 'diterima', 'dibatalkan', 'selesai'),
     payment_type: Sequelize.STRING,
+    total_harga_produk: Sequelize.INTEGER,
     delivery_costs: Sequelize.INTEGER,
     discount_amount: Sequelize.INTEGER,
     created_at: Sequelize.DATE
