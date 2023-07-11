@@ -41,7 +41,9 @@ export const register = async (req, res) => {
     const { fullname, phone, password, password_confirm } = req.body
     try {
         // validation
-        // ...
+        if (password_confirm != password) {
+            return res.errorBadRequest("Konfirmasi Password tidak sesuai!")
+        }
 
         const hashedPassword = await hashPassword(password)
 
