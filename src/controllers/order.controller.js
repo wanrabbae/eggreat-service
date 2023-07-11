@@ -144,4 +144,25 @@ const reviewOrder = async (req, res) => {
     }
 }
 
-export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder, cancelOrder, confirmOrder, prosesOrder, reviewOrder }
+const getSalesToko = async (req, res) => {
+    try {
+        const params = { start_date: req.query.start_date, end_date: req.query.end_date }
+        const sales = await service.getOrderSales(req.account.toko_id, params)
+
+        return res.jsonData(sales)
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+const getSalesIncomeToko = async (req, res) => {
+    try {
+        const sales = await service.getOrderSaleIncome(req.account.toko_id)
+
+        return res.jsonData(sales)
+    } catch (error) {
+        return res.errorBadRequest(error.message)
+    }
+}
+
+export { getAccountOrder, getOrderDetailAccount, postOrder, getTokoOrder, updateStatusOrder, cancelOrder, confirmOrder, prosesOrder, reviewOrder, getSalesToko, getSalesIncomeToko }

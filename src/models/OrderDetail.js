@@ -1,6 +1,5 @@
 import Sequelize from "sequelize"
 import db from "../../config/db-conf.js"
-import Product from './Product.js'
 
 const OrderDetail = db.define('order_detail', {
     order_id: Sequelize.INTEGER,
@@ -13,9 +12,5 @@ const OrderDetail = db.define('order_detail', {
     freezeTableName: true,
     timestamps: false
 });
-
-OrderDetail.belongsTo(Product, {
-    foreignKey: 'product_id'
-})
 
 export default OrderDetail;

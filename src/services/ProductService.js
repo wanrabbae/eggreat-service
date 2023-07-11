@@ -1,8 +1,10 @@
 import Product from "../models/Product.js"
 import { Op } from 'sequelize'
+import sequelize from "../../config/db-conf.js"
 import ProductImage from "../models/ProductImage.js"
 import ProductCategory from "../models/ProductCategory.js"
 import ProductRating from "../models/ProductRating.js"
+import OrderDetail from "../models/OrderDetail.js"
 import { Toko, Account } from "../models/index.js"
 import Address from "../models/Alamat.js"
 
@@ -21,8 +23,8 @@ class ProductService {
             [Op.like]: `%${search_key}%`
         }
 
-        return await Product.findAll({
-            attributes: ["id", "product_name", "price", "product_status", "created_at"],
+        const products = await Product.findAll({
+            attributes: ["id", "product_name", "price", "product_status", "created_at", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
             where: whereProduct,
             include: [
                 {
@@ -34,8 +36,34 @@ class ProductService {
                     attributes: ["id", "category_name"],
                     where: whereCond
                 },
-            ]
-        })
+                {
+                    model: ProductRating,
+                    attributes: [
+                        [sequelize.fn('AVG', sequelize.col('rate')), 'averageRating'],
+                    ],
+                    required: false,
+                },
+            ],
+            group: ['products.id', 'product_category.id', 'product_images.id', 'product_ratings.id'],
+        });
+
+        const productsWithRatings = products.map((product) => {
+            const averageRating = parseFloat(product.product_ratings[0]?.dataValues.averageRating) || 0;
+
+            return {
+                id: product.id,
+                product_name: product.product_name,
+                price: product.price,
+                product_status: product.product_status,
+                created_at: product.created_at,
+                product_images: product.product_images,
+                product_category: product.product_category,
+                averageRating: averageRating,
+                sold: parseInt(product.dataValues.sold)
+            };
+        });
+
+        return productsWithRatings;
     }
 
     async getProductByToko(toko_id, status) {
@@ -44,8 +72,8 @@ class ProductService {
         if (status == 'stok_habis') whereCond.stock = 0
         if (status == 'oncheck') whereCond.product_status = "proses"
 
-        return await Product.findAll({
-            attributes: ["id", "product_name", "product_status", "price", "created_at"],
+        const products = await Product.findAll({
+            attributes: ["id", "product_name", "product_status", "price", "created_at", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
             where: whereCond,
             include: [
                 {
@@ -55,13 +83,40 @@ class ProductService {
                     model: ProductCategory,
                     attributes: ["id", "category_name"],
                 },
-            ]
+                {
+                    model: ProductRating,
+                    attributes: [
+                        [sequelize.fn('AVG', sequelize.col('rate')), 'averageRating'],
+                    ],
+                    required: false,
+                },
+            ],
+            group: ['products.id', 'product_category.id', 'product_images.id', 'product_ratings.id'],
         })
+
+        const productsWithRatings = products.map((product) => {
+            const averageRating = parseFloat(product.product_ratings[0]?.dataValues.averageRating) || 0;
+
+            return {
+                id: product.id,
+                product_name: product.product_name,
+                price: product.price,
+                product_status: product.product_status,
+                created_at: product.created_at,
+                product_images: product.product_images,
+                product_category: product.product_category,
+                averageRating: averageRating,
+                sold: parseInt(product.dataValues.sold),
+            };
+        });
+
+        return productsWithRatings;
     }
 
     async getDetailProduct(id) {
-        return await Product.findOne({
+        const product = await Product.findOne({
             where: { id: id },
+            attributes: ['id', 'toko_id', 'category_id', 'product_name', 'description', 'price', 'quantity', 'quantity_unit', 'stock', 'is_delivery', 'shipping_costs', 'product_status', 'product_report', 'created_at', [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold'], [sequelize.literal('(SELECT AVG(rate) FROM `product_ratings` WHERE `product_ratings`.`product_id` = `products`.`id`)'), 'averageRating']],
             include: [
                 {
                     model: ProductImage
@@ -81,9 +136,9 @@ class ProductService {
                     model: Toko,
                     attributes: ["id", "account_id", "is_delivery_product", "is_picked_product"],
                     include: [
-                        {
-                            model: Address
-                        },
+                        // {
+                        //     model: Address
+                        // },
                         {
                             model: Account,
                             attributes: ["id", "fullname"]
@@ -92,6 +147,11 @@ class ProductService {
                 }
             ]
         })
+
+        product.dataValues.sold = parseInt(product.dataValues.sold) || 0
+        product.dataValues.averageRating = parseFloat(product.dataValues.averageRating) || 0
+
+        return product
     }
 
     async getSingleProduct(id) {
