@@ -103,6 +103,8 @@ class OrderService {
             }
         }
 
+        if (params.search) whereClause.invoice = { [Op.like]: `%${params.search}%` }
+
         return await Order.findAll({
             where: whereClause,
             attributes: [["id", "order_id"], ["created_at", "tanggal"], "invoice", ["total_harga", "penjualan"]],

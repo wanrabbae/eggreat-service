@@ -1,9 +1,11 @@
 import OrderService from '../services/OrderService.js'
 import ProductService from '../services/ProductService.js'
+import CartService from '../services/CartService.js'
 import { generateInv } from '../utils/functions.js';
 
 const service = new OrderService();
 const productService = new ProductService();
+const cartService = new CartService()
 
 const getAccountOrder = async (req, res) => {
     const Order = await service.getOrderAccount(req.account.id, req.query.status)
@@ -37,33 +39,33 @@ const postOrder = async (req, res) => {
             payment_type: payment_type,
             discount_amount: discount_amount,
             invoice: generateInv(),
-        })
+        });
 
         if (createOrder) {
-            for (let index = 0; index < order_detail.length; index++) {
-                const orderDetail = order_detail[index];
-                const checkProduct = await productService.getSingleProduct(orderDetail.product_id)
-
-                // if(checkProduct.stock < orderDetail.quantity) {
-                //     return res.errorBadRequest('Oops! Salah satu stok produk tidak mencukupi')
-                // }
+            const orderDetailPromises = order_detail.map(async (orderDetail) => {
+                const checkProduct = await productService.getSingleProduct(orderDetail.product_id);
 
                 await service.createOrderDetail({
                     order_id: createOrder.id,
                     product_id: orderDetail.product_id,
                     quantity: orderDetail.quantity,
-                    is_picked: orderDetail.is_picked
-                })
+                    is_picked: orderDetail.is_picked,
+                });
 
-                const newStock = checkProduct.stock - orderDetail.quantity
-                await productService.updateProduct({ stock: newStock }, orderDetail.product_id)
-            }
+                const newStock = checkProduct.stock - orderDetail.quantity;
+                await productService.updateProduct({ stock: newStock }, orderDetail.product_id);
+
+                await cartService.destroyCartByProductId(orderDetail.product_id) // delete all product on cart
+            });
+
+            await Promise.all(orderDetailPromises);
         }
 
-        return res.jsonSuccess()
+        return res.jsonSuccess();
     } catch (error) {
-        return res.errorBadRequest(error.message)
+        return res.errorBadRequest(error.message);
     }
+
 }
 
 const updateStatusOrder = async (req, res) => {
@@ -150,7 +152,7 @@ const reviewOrder = async (req, res) => {
 
 const getSalesToko = async (req, res) => {
     try {
-        const params = { start_date: req.query.start_date, end_date: req.query.end_date }
+        const params = { start_date: req.query.start_date, end_date: req.query.end_date, search: req.query.search }
         const sales = await service.getOrderSales(req.account.toko_id, params)
 
         return res.jsonData(sales)

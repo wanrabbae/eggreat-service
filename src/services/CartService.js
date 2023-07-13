@@ -25,6 +25,10 @@ class CartService {
     async destroyCart(id) {
         return await Cart.destroy({ where: { id: id } })
     }
+
+    async destroyCartByProductId(product_id) {
+        return await Cart.destroy({ where: { product_id: product_id } })
+    }
 }
 
 export default CartService
