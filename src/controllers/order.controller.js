@@ -2,6 +2,7 @@ import OrderService from '../services/OrderService.js'
 import ProductService from '../services/ProductService.js'
 import CartService from '../services/CartService.js'
 import { generateInv } from '../utils/functions.js';
+import sequelize from '../../config/db-conf.js'
 
 const service = new OrderService();
 const productService = new ProductService();
@@ -29,43 +30,45 @@ const postOrder = async (req, res) => {
     if (parseInt(discount_amount) > 0) total_harga = total_harga - (total_harga * (parseInt(discount_amount) / 100))
 
     try {
-        const createOrder = await service.createOrder({
-            account_id: req.account.id,
-            address_id: address_account_id,
-            toko_id: toko_id,
-            total_harga: total_harga,
-            total_harga_produk: total_harga_produk,
-            delivery_costs: delivery_costs,
-            payment_type: payment_type,
-            discount_amount: discount_amount,
-            invoice: generateInv(),
-        });
+        await sequelize.transaction(async (t) => {
+            const createOrder = await service.createOrder({
+                account_id: req.account.id,
+                address_id: address_account_id,
+                toko_id: toko_id,
+                total_harga: total_harga,
+                total_harga_produk: total_harga_produk,
+                delivery_costs: delivery_costs,
+                payment_type: payment_type,
+                discount_amount: discount_amount,
+                invoice: generateInv(),
+            }, { transaction: t });
 
-        if (createOrder) {
-            const orderDetailPromises = order_detail.map(async (orderDetail) => {
-                const checkProduct = await productService.getSingleProduct(orderDetail.product_id);
+            if (createOrder) {
+                const orderDetailPromises = order_detail.map(async (orderDetail) => {
+                    const checkProduct = await productService.getSingleProduct(orderDetail.product_id);
 
-                await service.createOrderDetail({
-                    order_id: createOrder.id,
-                    product_id: orderDetail.product_id,
-                    quantity: orderDetail.quantity,
-                    is_picked: orderDetail.is_picked,
+                    await service.createOrderDetail({
+                        order_id: createOrder.id,
+                        product_id: orderDetail.product_id,
+                        quantity: orderDetail.quantity,
+                        is_picked: orderDetail.is_picked,
+                    }, { transaction: t });
+
+                    const newStock = checkProduct.stock - orderDetail.quantity;
+                    await productService.updateProductStock(newStock, orderDetail.product_id, { transaction: t });
+
+                    await cartService.destroyCartByAccountIdAndProductId(req.account.id, orderDetail.product_id, { transaction: t }) // delete all product on cart
                 });
 
-                const newStock = checkProduct.stock - orderDetail.quantity;
-                await productService.updateProduct({ stock: newStock }, orderDetail.product_id);
-
-                await cartService.destroyCartByAccountIdAndProductId(req.account.id, orderDetail.product_id) // delete all product on cart
-            });
-
-            await Promise.all(orderDetailPromises);
-        }
+                await Promise.all(orderDetailPromises);
+            }
+        })
 
         return res.jsonSuccess();
     } catch (error) {
+        console.log(error);
         return res.errorBadRequest(error.message);
     }
-
 }
 
 const updateStatusOrder = async (req, res) => {

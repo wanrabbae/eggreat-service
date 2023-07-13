@@ -166,6 +166,10 @@ class ProductService {
         return await Product.update(payload, { where: { id: id } })
     }
 
+    async updateProductStock(stock, id, options) {
+        return await Product.update({ stock }, { where: { id: id }, ...options })
+    }
+
     async destroyProduct(id) {
         return await Product.destroy({ where: { id: id } })
     }

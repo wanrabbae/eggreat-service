@@ -26,8 +26,8 @@ class CartService {
         return await Cart.destroy({ where: { id: id } })
     }
 
-    async destroyCartByAccountIdAndProductId(account_id, product_id) {
-        return await Cart.destroy({ where: { account_id, product_id } })
+    async destroyCartByAccountIdAndProductId(account_id, product_id, options) {
+        return await Cart.destroy({ where: { account_id, product_id }, ...options })
     }
 }
 

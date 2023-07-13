@@ -125,16 +125,16 @@ class OrderService {
         return income
     }
 
-    async createOrder(payload) {
-        return await Order.create(payload)
+    async createOrder(payload, options) {
+        return await Order.create(payload, options)
     }
 
     async updateOrder(payload, id) {
         return await Order.update(payload, { where: { id: id } })
     }
 
-    async createOrderDetail(payload) {
-        return await OrderDetail.create(payload)
+    async createOrderDetail(payload, options) {
+        return await OrderDetail.create(payload, options)
     }
 
     async giveRating(payload) {
