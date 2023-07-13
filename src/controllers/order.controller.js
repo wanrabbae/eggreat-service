@@ -55,7 +55,7 @@ const postOrder = async (req, res) => {
                 const newStock = checkProduct.stock - orderDetail.quantity;
                 await productService.updateProduct({ stock: newStock }, orderDetail.product_id);
 
-                await cartService.destroyCartByProductId(orderDetail.product_id) // delete all product on cart
+                await cartService.destroyCartByAccountIdAndProductId(req.account.id, orderDetail.product_id) // delete all product on cart
             });
 
             await Promise.all(orderDetailPromises);
