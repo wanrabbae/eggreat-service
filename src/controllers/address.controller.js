@@ -27,7 +27,7 @@ const postAlamat = async (req, res) => {
             kodepos: kodepos,
         })
 
-        return res.jsonSuccess()
+        return res.jsonSuccessCreated()
     } catch (error) {
         return res.errorBadRequest(error.message)
     }

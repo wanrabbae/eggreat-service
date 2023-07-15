@@ -38,7 +38,7 @@ const updateProfileFoto = async (req, res) => {
 
         const upload = await handleUpload(req.file)
 
-        await deleteFile(account.foto)
+        if (account.foto != null) await deleteFile(account.foto)
 
         await service.updateAccount({ foto: upload.Location }, req.account.id)
 

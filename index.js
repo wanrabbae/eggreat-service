@@ -33,8 +33,7 @@ app.get('/', (req, res) => {
 })
 
 app.use(response)
-app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes, orderRoutes)
-app.use('/api/admin', adminRoutes, adminAuthRoutes)
+app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes, orderRoutes, adminRoutes, adminAuthRoutes)
 
 app.use('*', (req, res) => {
     res.errorNotFound('Not Found')

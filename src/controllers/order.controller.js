@@ -64,7 +64,7 @@ const postOrder = async (req, res) => {
             }
         })
 
-        return res.jsonSuccess();
+        return res.jsonSuccessCreated('Order created');
     } catch (error) {
         console.log(error);
         return res.errorBadRequest(error.message);

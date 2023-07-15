@@ -17,7 +17,7 @@ const postRekening = async (req, res) => {
             bank_no
         })
 
-        return res.jsonSuccess()
+        return res.jsonSuccessCreated('Rekening created')
     } catch (error) {
         return res.errorBadRequest(error.message)
     }

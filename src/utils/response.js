@@ -9,6 +9,10 @@ export default function (req, res, next) {
         return res.status(200).send({ message: msg })
     }
 
+    res.jsonSuccessCreated = (msg = "Action Success") => {
+        return res.status(201).send({ message: msg })
+    }
+
     res.errorBadRequest = (msg = "Bad Request") => {
         return res.status(400).send({ message: msg })
     }

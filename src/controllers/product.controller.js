@@ -43,7 +43,7 @@ const postProduct = async (req, res) => {
             await service.createProductImage({ product_id: product.id, image: uploaded.Location })
         }
 
-        return res.jsonSuccess()
+        return res.jsonSuccessCreated('Product created')
     } catch (error) {
         return res.errorBadRequest(error.message)
     }

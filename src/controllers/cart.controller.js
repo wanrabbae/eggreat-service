@@ -16,7 +16,7 @@ const postCart = async (req, res) => {
             quantity,
         })
 
-        return res.jsonSuccess()
+        return res.jsonSuccessCreated()
     } catch (error) {
         return res.errorBadRequest(error.message)
     }
