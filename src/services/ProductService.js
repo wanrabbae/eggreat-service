@@ -24,7 +24,7 @@ class ProductService {
         }
 
         const products = await Product.findAll({
-            attributes: ["id", "product_name", "price", "product_status", "created_at", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
+            attributes: ["id", "product_name", "price", "product_status", "created_at", "stock", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
             where: whereProduct,
             include: [
                 {
@@ -73,7 +73,7 @@ class ProductService {
         if (status == 'oncheck') whereCond.product_status = "proses"
 
         const products = await Product.findAll({
-            attributes: ["id", "product_name", "product_status", "price", "created_at", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
+            attributes: ["id", "product_name", "stock", "product_status", "price", "created_at", "category_id", [sequelize.literal('(SELECT SUM(quantity) FROM `order_detail` WHERE `order_detail`.`product_id` = `products`.`id`)'), 'sold']],
             where: whereCond,
             include: [
                 {
