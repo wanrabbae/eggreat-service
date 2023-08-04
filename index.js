@@ -18,6 +18,7 @@ import cartRoutes from './src/routes/cart.routes.js'
 import orderRoutes from './src/routes/order.routes.js'
 
 import adminRoutes from './src/routes/admin/admin.routes.js'
+import penggunaRoutes from './src/routes/admin/pengguna.routes.js'
 import adminAuthRoutes from './src/routes/admin/auth.routes.js'
 
 import './config/db-conf.js'
@@ -33,7 +34,7 @@ app.get('/', (req, res) => {
 })
 
 app.use(response)
-app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes, orderRoutes, adminRoutes, adminAuthRoutes)
+app.use('/api', authRoutes, accountRoutes, rekeningRoutes, addressRoutes, productRoutes, cartRoutes, orderRoutes, adminRoutes, adminAuthRoutes, penggunaRoutes)
 
 app.use('*', (req, res) => {
     res.errorNotFound('Not Found')

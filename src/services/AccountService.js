@@ -19,6 +19,37 @@ class AccountService {
         return await Account.findOne({ where: { phone: phone }, attributes: ['id', 'phone'] })
     }
 
+    async getPenggunaAll(limit, offset, keyword) {
+        let where = {}
+
+        if (keyword != null || keyword != undefined) where = {
+            fullname: { [Op.like]: `%${keyword}%` },
+            phone: { [Op.like]: `%${keyword}%` },
+        }
+
+        return await Account.findAll({
+            attributes: {
+                exclude: ['password']
+            },
+            where,
+            raw: true,
+            nest: true,
+            limit,
+            offset
+        })
+    }
+
+    async getCountByQuery(keyword) {
+        let where = {}
+
+        if (keyword != null || keyword != undefined) where = {
+            fullname: { [Op.like]: `%${keyword}%` },
+            phone: { [Op.like]: `%${keyword}%` },
+        }
+
+        return await Account.count(where)
+    }
+
     async getAccountEmailOrPhone(emailOrPhone) {
         return await Account.findOne({
             where: {
