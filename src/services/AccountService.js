@@ -24,14 +24,13 @@ class AccountService {
 
         if (keyword != null || keyword != undefined) where = {
             fullname: { [Op.like]: `%${keyword}%` },
-            phone: { [Op.like]: `%${keyword}%` },
         }
 
         return await Account.findAll({
             attributes: {
                 exclude: ['password']
             },
-            where,
+            where: where,
             raw: true,
             nest: true,
             limit,
@@ -44,10 +43,9 @@ class AccountService {
 
         if (keyword != null || keyword != undefined) where = {
             fullname: { [Op.like]: `%${keyword}%` },
-            phone: { [Op.like]: `%${keyword}%` },
         }
 
-        return await Account.count(where)
+        return await Account.count({ where: where })
     }
 
     async getAccountEmailOrPhone(emailOrPhone) {

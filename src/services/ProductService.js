@@ -160,6 +160,50 @@ class ProductService {
         return await Product.findByPk(id, { attributes: ["id", "toko_id", "stock"], raw: true, nest: true })
     }
 
+    async getProductPaginate(limit, offset, keyword, status = "lolos") {
+        let where = {}
+
+        if (keyword != null || keyword != undefined) where = {
+            product_name: { [Op.like]: `%${keyword}%` },
+        }
+
+        return await Product.findAll({
+            where: { ...where, product_status: status },
+            attributes: ["id", "product_name", "price", "quantity", "quantity_unit", "product_status", "product_report", "created_at"],
+            include: [
+                {
+                    model: ProductImage,
+                    attributes: ["id", "image"],
+                    limit: 1
+                },
+                {
+                    model: Toko,
+                    attributes: ["id", "account_id"],
+                    include: [
+                        {
+                            model: Account,
+                            attributes: ["id", "fullname"]
+                        },
+                    ]
+                }
+            ],
+            raw: true,
+            nest: true,
+            limit,
+            offset
+        })
+    }
+
+    async getCountByQuery(keyword, status = "lolos") {
+        let where = {}
+
+        if (keyword != null || keyword != undefined) where = {
+            product_name: { [Op.like]: `%${keyword}%` },
+        }
+
+        return await Product.count({ where: { ...where, product_status: status } })
+    }
+
     async createProduct(payload) {
         return await Product.create(payload)
     }
